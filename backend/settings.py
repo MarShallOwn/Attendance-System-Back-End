@@ -47,7 +47,15 @@ INSTALLED_APPS = [
 
     #apps
     'authentication',
+    
 ]
+
+#this is our Custom User model to be authenticated
+AUTH_USER_MODEL = "authentication.User"
+
+REST_FRAMEWORK = {
+    # Here all Global Settings for authentication and permissions
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
