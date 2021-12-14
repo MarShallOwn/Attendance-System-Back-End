@@ -17,6 +17,10 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 #allow me to change defualt id with uuid with unsequintial number
 import uuid as uuid_lib
+#these two import one for JWT and settings for using Secret key
+import jwt
+from django.conf import settings
+from datetime import datetime, timedelta
 
 class MyUserManager(UserManager):
 
@@ -112,8 +116,13 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    #I will come back to it to make JWT Token
+    #This Property used to generate token when call it
     @property
     def token(self):
-        return ''
+        token = jwt.encode(
+            {'username':self.username,'email':self.email,'exp':datetime.utcnow()+timedelta(hours=24),},
+            settings.SECRET_KEY,
+            algorithm='HS256',)
+
+        return token
 

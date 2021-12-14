@@ -14,6 +14,8 @@ def Status_Code(name):
     
     elif str.lower(name) == 'created':
         return status.HTTP_201_CREATED
+    elif str.lower(name) == 'unauth':
+        return status.HTTP_401_UNAUTHORIZED
     else:
         raise ValueError
 
@@ -47,3 +49,9 @@ def Created_Response():
                 'error':None,
                 'data':None,},
                 status=Status_Code('created'))
+
+def Unautherized_Response(data):
+    return Response({
+                'error':data,
+                'data':None},
+                status=Status_Code('unauth'))
