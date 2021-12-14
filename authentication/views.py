@@ -12,7 +12,7 @@ def Registration(request):
         try:
             users = User.objects.all()
         except:
-            return Bad_Response('GET Registration User')
+            return Bad_Response(data=None,From='GET Registration User')
         serializers = UserSerializers(instance=users,many=True)
         return Ok_Response(serializers.data)
     
@@ -20,11 +20,11 @@ def Registration(request):
         serializers = UserSerializers(data=request.data)
         if serializers.is_valid():
             serializers.save()
-            return Created_Response(serializers.data)
+            return Created_Response()
         else:
-            return Bad_Response('POST Regestration User')
+            return Bad_Response(data=serializers.errors,From=None)
     else:
-        return Bad_Response('ALL Regestration User')
+        return Bad_Response(data=None,From='ALL Regestration User')
 
 #Edit,GET specific user, Delete
 @api_view(['GET','PUT','DELETE'])
@@ -32,16 +32,16 @@ def Mentainanace(request,pk):
     try:
         user = User.objects.get(id=pk)
     except:
-        return Bad_Response('Try Mentainance of User')
+        return Bad_Response(data=None,From='Try Mentainance of User')
     if request.method == 'PUT':
         deserializer = UserSerializers(instance=user,data=request.data)
         if deserializer.is_valid():
             deserializer.save()
-            return Ok_Response(deserializer.data)
+            return No_Content_Response()
         else:
-            return Bad_Response('PUT Mentainance User')
+            return Bad_Response(data=deserializer.errors,From='PUT Mentainance User')
     else:
-        return Bad_Response('ALL Mentainance User')
+        return Bad_Response(data=None,From='ALL Mentainance User')
 
 
 

@@ -48,7 +48,7 @@ class MyUserManager(UserManager):
 
 class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     username_validator = UnicodeUsernameValidator()
-    national_id = models.CharField(
+    nationalID = models.CharField(
         _('National ID'),
         max_length=14,
         unique=True,
@@ -66,10 +66,10 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'unique': _("A user with that username already exists."),
         },blank=False,null=False,
     )
-    first_name = models.CharField(_('first name'), max_length=150,blank=False,null=False,)
-    last_name = models.CharField(_('last name'), max_length=150,blank=False,null=False,)
+    firstname = models.CharField(_('first name'), max_length=150,blank=False,null=False,)
+    lastname = models.CharField(_('last name'), max_length=150,blank=False,null=False,)
     email = models.EmailField(_('email address'),unique=True,blank=False,null=False,)
-    phone_number = models.CharField(
+    phoneNumber = models.CharField(
         _('phone number'),
         max_length=11,
         validators=[MinLengthValidator(limit_value=11,message='Phone Number must be 11 number'),RegexValidator(regex=r'01[1,2,5,0]{1}[0-9]{8}',message="must be valid Egyption Number")],

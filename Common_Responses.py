@@ -1,3 +1,4 @@
+from django.utils.translation import deactivate_all
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -17,12 +18,18 @@ def Status_Code(name):
         raise ValueError
 
 
-def Bad_Response(From):
-    return Response({
-                'error':f'BAD REQUEST in {From}',
+def Bad_Response(data=None,From=None):
+    if data!=None:
+        return Response({
+                'error':data,
                 'data':None},
                 status=Status_Code('bad'))
-
+    else:
+        return Response({
+                'error':f'Bad Request in {From}',
+                'data':None},
+                status=Status_Code('bad'))
+        
 def Ok_Response(data):
     return Response({
                 'error':None,
@@ -35,8 +42,8 @@ def No_Content_Response():
                 'data':None},
                 status=Status_Code('nocontent'))
 
-def Created_Response(data):
+def Created_Response():
     return Response({
                 'error':None,
-                'data':data},
+                'data':None},
                 status=Status_Code('created'))
