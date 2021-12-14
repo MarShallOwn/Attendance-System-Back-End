@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import User
 from rest_framework.decorators import api_view
 from .serializers import UserSerializers
-from rest_framework.response import Response
-from rest_framework import status
+# I Combine all Repeated Response and status code in one file ('Don't Repeat Your Self')
+from Common_Responses import *
 
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
@@ -12,64 +12,36 @@ def Registration(request):
         try:
             users = User.objects.all()
         except:
-            return Response({
-                'error':'BAD REQUEST in GET Registration User',
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
+            return Bad_Response('GET Registration User')
         serializers = UserSerializers(instance=users,many=True)
-        return Response({
-                'error':None,
-                'data':serializers.data},
-                status=status.HTTP_200_OK)
+        return Ok_Response(serializers.data)
     
     elif request.method=='POST':
         serializers = UserSerializers(data=request.data)
         if serializers.is_valid():
             serializers.save()
-            return Response({
-                'error':None,
-                'data':serializers.data},
-                status=status.HTTP_201_CREATED)
+            return Created_Response(serializers.data)
         else:
-            return Response({
-                'error':'invalid Data in POST Regestration User',
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
-
+            return Bad_Response('POST Regestration User')
     else:
-        return Response({
-                'error':'BAD REQUEST in All Registration User',
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
+        return Bad_Response('ALL Regestration User')
 
-
+#Edit,GET specific user, Delete
 @api_view(['GET','PUT','DELETE'])
 def Mentainanace(request,pk):
     try:
         user = User.objects.get(id=pk)
     except:
-        return Response({
-                'error':'BAD REQUEST in PUT Mentainance of User',
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
+        return Bad_Response('Try Mentainance of User')
     if request.method == 'PUT':
         deserializer = UserSerializers(instance=user,data=request.data)
         if deserializer.is_valid():
             deserializer.save()
-            return Response({
-                'error':None,
-                'data':deserializer.data},
-                status=status.HTTP_202_ACCEPTED)
+            return Ok_Response(deserializer.data)
         else:
-            return Response({
-                'error':deserializer.errors,
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
+            return Bad_Response('PUT Mentainance User')
     else:
-        return Response({
-                'error':'BAD REQUEST in ALL Mentainance User',
-                'data':None},
-                status=status.HTTP_400_BAD_REQUEST)
+        return Bad_Response('ALL Mentainance User')
 
 
 
