@@ -1,3 +1,4 @@
+
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 #import Tracking model from helper that track(created,updated) date
@@ -14,7 +15,8 @@ from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
 #to work with date
 from django.utils import timezone
-
+#allow me to change defualt id with uuid with unsequintial number
+import uuid as uuid_lib
 
 class MyUserManager(UserManager):
 
@@ -48,6 +50,15 @@ class MyUserManager(UserManager):
 
 class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     username_validator = UnicodeUsernameValidator()
+    id=models.UUIDField(
+        default=uuid_lib.uuid4,
+        unique=True,
+        primary_key=True,
+        editable=False,
+        auto_created=True,
+        null=False,
+        blank=False,
+    )
     nationalID = models.CharField(
         _('National ID'),
         max_length=14,

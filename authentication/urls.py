@@ -4,5 +4,5 @@ from . import views
 urlpatterns =[
     path('employer/create/',views.Registration),
     path('employer/list/',views.Registration),
-    path('employer/edit/<int:pk>',views.Mentainanace),
+    path('employer/edit/<uuid:pk>',views.Mentainanace),
 ]

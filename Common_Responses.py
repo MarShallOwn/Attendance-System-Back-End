@@ -27,7 +27,7 @@ def Bad_Response(data=None,From=None):
     else:
         return Response({
                 'error':f'Bad Request in {From}',
-                'data':None},
+                'data':None,},
                 status=Status_Code('bad'))
         
 def Ok_Response(data):
@@ -39,11 +39,11 @@ def Ok_Response(data):
 def No_Content_Response():
     return Response({
                 'error':None,
-                'data':None},
+                'data':None,},
                 status=Status_Code('nocontent'))
 
 def Created_Response():
     return Response({
                 'error':None,
-                'data':None},
+                'data':None,},
                 status=Status_Code('created'))
