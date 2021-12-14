@@ -1,4 +1,4 @@
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 #import Tracking model from helper that track(created,updated) date
 from helpers.models import TrackingModel
@@ -69,6 +69,17 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     first_name = models.CharField(_('first name'), max_length=150,blank=False,null=False,)
     last_name = models.CharField(_('last name'), max_length=150,blank=False,null=False,)
     email = models.EmailField(_('email address'),unique=True,blank=False,null=False,)
+    phone_number = models.CharField(
+        _('phone number'),
+        max_length=11,
+        validators=[MinLengthValidator(limit_value=11,message='Phone Number must be 11 number'),RegexValidator(regex=r'01[1,2,5,0]{1}[0-9]{8}',message="must be valid Egyption Number")],
+        unique=True,
+    error_messages={
+            'unique': _("A user with that phone number already exists."),
+        },
+    blank=False,
+    null=True,
+    )
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
