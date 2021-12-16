@@ -1,3 +1,4 @@
+
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 #import Tracking model from helper that track(created,updated) date
@@ -14,7 +15,12 @@ from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
 #to work with date
 from django.utils import timezone
-
+#allow me to change defualt id with uuid with unsequintial number
+import uuid as uuid_lib
+#these two import one for JWT and settings for using Secret key
+import jwt
+from django.conf import settings
+from datetime import datetime, timedelta
 
 class MyUserManager(UserManager):
 
@@ -48,7 +54,16 @@ class MyUserManager(UserManager):
 
 class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     username_validator = UnicodeUsernameValidator()
-    national_id = models.CharField(
+    id=models.UUIDField(
+        default=uuid_lib.uuid4,
+        unique=True,
+        primary_key=True,
+        editable=False,
+        auto_created=True,
+        null=False,
+        blank=False,
+    )
+    nationalID = models.CharField(
         _('National ID'),
         max_length=14,
         unique=True,
@@ -66,10 +81,10 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'unique': _("A user with that username already exists."),
         },blank=False,null=False,
     )
-    first_name = models.CharField(_('first name'), max_length=150,blank=False,null=False,)
-    last_name = models.CharField(_('last name'), max_length=150,blank=False,null=False,)
+    firstname = models.CharField(_('first name'), max_length=150,blank=False,null=False,)
+    lastname = models.CharField(_('last name'), max_length=150,blank=False,null=False,)
     email = models.EmailField(_('email address'),unique=True,blank=False,null=False,)
-    phone_number = models.CharField(
+    phoneNumber = models.CharField(
         _('phone number'),
         max_length=11,
         validators=[MinLengthValidator(limit_value=11,message='Phone Number must be 11 number'),RegexValidator(regex=r'01[1,2,5,0]{1}[0-9]{8}',message="must be valid Egyption Number")],
@@ -101,8 +116,13 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    #I will come back to it to make JWT Token
+    #This Property used to generate token when call it
     @property
     def token(self):
-        return ''
+        token = jwt.encode(
+            {'username':self.username,'email':self.email,'exp':datetime.utcnow()+timedelta(hours=24),},
+            settings.SECRET_KEY,
+            algorithm='HS256',)
+
+        return token
 

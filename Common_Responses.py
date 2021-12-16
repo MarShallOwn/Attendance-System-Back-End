@@ -1,3 +1,4 @@
+from django.utils.translation import deactivate_all
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -13,16 +14,24 @@ def Status_Code(name):
     
     elif str.lower(name) == 'created':
         return status.HTTP_201_CREATED
+    elif str.lower(name) == 'unauth':
+        return status.HTTP_401_UNAUTHORIZED
     else:
         raise ValueError
 
 
-def Bad_Response(From):
-    return Response({
-                'error':f'BAD REQUEST in {From}',
+def Bad_Response(data=None,From=None):
+    if data!=None:
+        return Response({
+                'error':data,
                 'data':None},
                 status=Status_Code('bad'))
-
+    else:
+        return Response({
+                'error':f'Bad Request in {From}',
+                'data':None,},
+                status=Status_Code('bad'))
+        
 def Ok_Response(data):
     return Response({
                 'error':None,
@@ -32,11 +41,17 @@ def Ok_Response(data):
 def No_Content_Response():
     return Response({
                 'error':None,
-                'data':None},
+                'data':None,},
                 status=Status_Code('nocontent'))
 
-def Created_Response(data):
+def Created_Response():
     return Response({
                 'error':None,
-                'data':data},
+                'data':None,},
                 status=Status_Code('created'))
+
+def Unautherized_Response(data):
+    return Response({
+                'error':data,
+                'data':None},
+                status=Status_Code('unauth'))
