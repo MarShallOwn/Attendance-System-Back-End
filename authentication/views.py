@@ -1,5 +1,6 @@
+from rest_framework.authentication import BasicAuthentication
 from .models import User
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from .serializers import LoginSerializer, UserSerializers
 # I Combine all Repeated Response and status code in one file ('Don't Repeat Your Self')
 from Common_Responses import *
@@ -47,6 +48,7 @@ def Mentainanace(request,pk):
 
 
 @api_view(['POST'])
+@authentication_classes([BasicAuthentication])
 def Login(request):
     email = request.data['email']
     password = request.data['password']
@@ -58,3 +60,7 @@ def Login(request):
         return Unautherized_Response('Invalid Credntiaol')
 
 
+@api_view(['GET'])
+def AuthenticateUser(request):
+    serializers= UserSerializers(request.user)
+    return Ok_Response(serializers.data)

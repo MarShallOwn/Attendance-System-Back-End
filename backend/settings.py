@@ -55,6 +55,9 @@ AUTH_USER_MODEL = "authentication.User"
 
 REST_FRAMEWORK = {
     # Here all Global Settings for authentication and permissions
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'authentication.jwt.JWTAuthentication'
+    ]
 }
 
 MIDDLEWARE = [
