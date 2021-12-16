@@ -6,6 +6,8 @@ from .serializers import LoginSerializer, UserSerializers
 from Common_Responses import *
 #allow me to handle the authentiction of user (Login) by email,password 
 from django.contrib.auth import authenticate
+
+
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
 def Registration(request):
@@ -43,6 +45,12 @@ def Mentainanace(request,pk):
             return No_Content_Response()
         else:
             return Bad_Response(data=deserializer.errors,From='PUT Mentainance User')
+    elif request.method == 'GET':
+        serializers = UserSerializers(instance=user)
+        return Ok_Response(data=serializers.data)
+    elif request.method == 'DELETE':
+        user.delete()
+        return No_Content_Response()
     else:
         return Bad_Response(data=None,From='ALL Mentainance User')
 
