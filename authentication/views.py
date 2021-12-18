@@ -13,8 +13,6 @@ from django.contrib.sites.shortcuts import get_current_site
 #used to reverse the name of url to redirect use to 
 #another endpoint
 from django.urls import reverse
-from django.conf import settings
-import jwt
 
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
