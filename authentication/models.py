@@ -18,12 +18,12 @@ from django.utils import timezone
 #allow me to change defualt id with uuid with unsequintial number
 import uuid as uuid_lib
 #these two import one for JWT and settings for using Secret key
+from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from django.conf import settings
 from datetime import datetime, timedelta
 
 class MyUserManager(UserManager):
-
     def _create_user(self, username, email, password, **extra_fields):
         if not username:
             raise ValueError('The given username must be set')
@@ -49,7 +49,6 @@ class MyUserManager(UserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
         return self._create_user(username, email, password, **extra_fields)
-
 
 
 class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
@@ -116,16 +115,19 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    #This Property used to generate token when call it
-    @property
-    def token(self):
+    #used to generate token when call it
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
         token = jwt.encode(
             {
                 'username':self.username,
                 'email':self.email,
-                'exp':datetime.utcnow()+timedelta(hours=24),},
+                'exp':datetime.utcnow()+timedelta(minutes=5)
+            ,}, 
             settings.SECRET_KEY,
             algorithm='HS256',)
-
-        return token
+        return {
+            'refresh': str(refresh),
+            'access':str(token),
+        }
 

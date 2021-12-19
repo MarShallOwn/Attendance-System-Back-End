@@ -1,11 +1,11 @@
-from datetime import datetime
+from django.conf import settings
+from drf_yasg.utils import swagger_auto_schema
+import jwt
 from .models import User
 from rest_framework.decorators import api_view, authentication_classes
 from .serializers import LoginSerializer, UserSerializers
 # I Combine all Repeated Response and status code in one file ('Don't Repeat Your Self')
 from Common_Responses import *
-#allow me to handle the authentiction of user (Login) by email,password 
-from django.contrib.auth import authenticate
 #the class resposible for sending emails
 from .Util import Util
 #this is used to get the current site that we run now
@@ -62,19 +62,16 @@ def Mentainanace(request,pk):
     else:
         return Bad_Response(data=None,From='ALL Mentainance User')
 
-
+@swagger_auto_schema(method='POST',request_body=LoginSerializer)
 @api_view(['POST'])
 @authentication_classes([])
 def Login(request):
-    email = request.data['email']
-    password = request.data['password']
-    user = authenticate(username=email,password=password)
-    if user:
-        serializers = LoginSerializer(user)
-        user.last_login = datetime.utcnow()
-        return Ok_Response(serializers.data)
-    else:
-        return Unautherized_Response('Invalid Credntiaol')
+        serializers = LoginSerializer(data=request.data)
+        if serializers.is_valid():
+            return Ok_Response(serializers.data)
+        else:
+            return Unautherized_Response(serializers.errors)
+
 
 
 @api_view(['GET'])
@@ -91,31 +88,36 @@ def ResetPassword(request):
         user = User.objects.get(email = request.data['email'])
     except:
         return Bad_Response(data=None,From="Reseting This User with this email")
-    token = user.token
-    current_site = get_current_site(request).domain
-    relative_link = reverse('employerlist')
-    urlToUpdatePass = 'http://'+current_site+relative_link+"?Authorization=Bearer%20"+str(token)
+    token = user.tokens()['access']
+    Code = str(token)
     data = {
-        'domain':urlToUpdatePass,
         'subject':'Reset Your Password',
-        'body':'Hi ' + user.username+', Use link below to update your password \n'+urlToUpdatePass,
+        'body':'HI <b>' + user.username+'</b>,\n<strong>Copy the code below\nCode</strong>\n'+'<h3 style="color:red">'+Code+'</h3>',
         'to': user.email,
         }
     Util.send_email(data)
     return Ok_Response(data="Reseting Email Has Been Sent.")
 
 @api_view(['PUT'])
+@authentication_classes([])
 def UpdatePassword(request):
+    token = request.data['code']
     try:
-        serializedUser = UserSerializers(request.user)
-        user = User.objects.get(email=serializedUser.data['email'])
+        pyload = jwt.decode(token,settings.SECRET_KEY,algorithms='HS256')
+        user = User.objects.get(email=pyload['email'])
+        if user:
+            if len(request.data['password'])>=6:
+                user.set_password(request.data['password'])
+                user.save()
+                return No_Content_Response()
+            return Bad_Response(From="Password should be 6 char at least")
+        return Bad_Response(From="You Are Not User")
+    except jwt.ExpiredSignatureError as ex:
+        return Unautherized_Response("Reseting Link Expired")
+    
+    except jwt.exceptions.DecodeError as ex:
+        return Bad_Response(From="Invalid Decoding")
     except:
-        return Bad_Response(From="Updata user Password") 
-    if user:
-        if len(request.data['password'])>=6:
-            user.set_password(request.data['password'])
-            user.save()
-            return No_Content_Response()
-        return Bad_Response(From="Password should be 6 char at least")
-    return Bad_Response(From="You Are Not User")
+        return Bad_Response(From="updating Password")
+    
     
