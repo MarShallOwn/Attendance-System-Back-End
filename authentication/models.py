@@ -106,8 +106,8 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    role = models.OneToOneField(role,related_name='user',on_delete=models.SET_NULL,blank=False,null=True)
-    department = models.OneToOneField('department.department',on_delete=models.SET_NULL,blank=False,null=True)
+    role = models.ForeignKey(role,related_name='user',on_delete=models.SET_NULL,blank=False,null=True)
+    department = models.ForeignKey('department.department',on_delete=models.SET_NULL,blank=False,null=True)
     objects = MyUserManager()
 
     EMAIL_FIELD = 'email'
@@ -121,4 +121,5 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'refresh': str(refresh),
             'access':str(refresh.access_token),
         }
-
+    def __str__(self):
+        return str(self.id)

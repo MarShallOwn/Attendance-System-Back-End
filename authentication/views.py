@@ -1,7 +1,7 @@
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 import jwt
-from rest_framework.permissions import IsAuthenticated
+from authentication.permissions import IsManager
 from .models import User
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .serializers import LoginSerializer, LogoutSerializer, UpdateSerializer, UserSerializers
@@ -9,37 +9,31 @@ from .serializers import LoginSerializer, LogoutSerializer, UpdateSerializer, Us
 from Common_Responses import *
 #the class resposible for sending emails
 from .Util import Util
-#this is used to get the current site that we run now
-from django.contrib.sites.shortcuts import get_current_site
-#used to reverse the name of url to redirect use to 
-#another endpoint
-from django.urls import reverse
-
-from authentication import serializers
 
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
-def Registration(request):
-    if request.method=='GET':
-        try:
-            users = User.objects.all()
-        except:
-             return Bad_Response(data=None,From='GET Registration User')
-        serializers = UserSerializers(instance=users,many=True)
-        return Ok_Response(serializers.data)
-    
-    elif request.method=='POST':
-        serializers = UserSerializers(data=request.data)
-        if serializers.is_valid():
-            instance =serializers.save()
-            instance.set_password(instance.password)
-            instance.save()
-            return Created_Response()
+def Registration(request):  
+    if IsManager(request):
+        if request.method=='GET':
+            try:
+                users = User.objects.all()
+            except:
+                return Bad_Response(data=None,From='GET Registration User')
+            serializers = UserSerializers(instance=users,many=True)
+            return Ok_Response(serializers.data)
+        
+        elif request.method=='POST':
+            serializers = UserSerializers(data=request.data)
+            if serializers.is_valid():
+                instance =serializers.save()
+                instance.set_password(instance.password)
+                instance.save()
+                return Created_Response()
+            else:
+                return Bad_Response(data=serializers.errors,From=None)
         else:
-            return Bad_Response(data=serializers.errors,From=None)
-    else:
-        return Bad_Response(data=None,From='ALL Regestration User')
-
+            return Bad_Response(data=None,From='ALL Regestration User')
+    return Unautherized_Response()
 #Edit,GET specific user, Delete
 @api_view(['GET','PUT','DELETE'])
 def Mentainanace(request,pk):
