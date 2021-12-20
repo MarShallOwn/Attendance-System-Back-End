@@ -19,7 +19,8 @@ from django.utils import timezone
 import uuid as uuid_lib
 #Used to generate the access and the refresh token
 from rest_framework_simplejwt.tokens import RefreshToken
-
+#models the user has relation with 
+from role.models import role
 
 class MyUserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
@@ -105,8 +106,8 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
+    role = models.OneToOneField(role,related_name='user',on_delete=models.SET_NULL,blank=False,null=True)
+    department = models.OneToOneField('department.department',on_delete=models.SET_NULL,blank=False,null=True)
     objects = MyUserManager()
 
     EMAIL_FIELD = 'email'

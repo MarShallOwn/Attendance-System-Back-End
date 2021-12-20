@@ -196,6 +196,6 @@ SWAGGER_SETTINGS = {
 
 #time of access token and refresh token to be valid
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=24),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=12),
 }

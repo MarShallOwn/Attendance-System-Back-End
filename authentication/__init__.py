@@ -50,7 +50,6 @@ def CreateDefaultAdminUser():
             "email,"
             "is_staff,"
             "is_active,"
-            "date_joined,"
             "phoneNumber)"
             "VALUES"
             "("
@@ -66,7 +65,6 @@ def CreateDefaultAdminUser():
             "'admin@gmail.com',"
             "'1',"
             "'1',"
-            "now(),"
             "'01111111111')"
         )   
     mydb=connector.connect(
