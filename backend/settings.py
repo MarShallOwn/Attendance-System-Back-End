@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    #to black list the refresh token
+    'rest_framework_simplejwt.token_blacklist',
     #swagger UI
     'drf_yasg',
-
     #JWT AUTH
     'rest_framework_simplejwt',
     #apps
@@ -63,7 +64,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':[
         'authentication.jwt.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 MIDDLEWARE = [
@@ -190,6 +194,6 @@ SWAGGER_SETTINGS = {
 
 #time of access token and refresh token to be valid
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=2),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=12),
 }

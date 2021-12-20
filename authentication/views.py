@@ -1,9 +1,10 @@
 from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 import jwt
+from rest_framework.permissions import IsAuthenticated
 from .models import User
-from rest_framework.decorators import api_view, authentication_classes
-from .serializers import LoginSerializer, UserSerializers
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from .serializers import LoginSerializer, LogoutSerializer, UpdateSerializer, UserSerializers
 # I Combine all Repeated Response and status code in one file ('Don't Repeat Your Self')
 from Common_Responses import *
 #the class resposible for sending emails
@@ -13,6 +14,8 @@ from django.contrib.sites.shortcuts import get_current_site
 #used to reverse the name of url to redirect use to 
 #another endpoint
 from django.urls import reverse
+
+from authentication import serializers
 
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
@@ -45,11 +48,9 @@ def Mentainanace(request,pk):
     except:
         return Bad_Response(data=None,From='Try Mentainance of User')
     if request.method == 'PUT':
-        deserializer = UserSerializers(instance=user,data=request.data)
+        deserializer = UpdateSerializer(instance=user,data=request.data)
         if deserializer.is_valid():
-            instance =deserializer.save()
-            instance.set_password(instance.password)
-            instance.save()
+            deserializer.save()
             return No_Content_Response()
         else:
             return Bad_Response(data=deserializer.errors,From='PUT Mentainance User')
@@ -65,14 +66,22 @@ def Mentainanace(request,pk):
 @swagger_auto_schema(method='POST',request_body=LoginSerializer)
 @api_view(['POST'])
 @authentication_classes([])
+@permission_classes([])
 def Login(request):
         serializers = LoginSerializer(data=request.data)
         if serializers.is_valid():
             return Ok_Response(serializers.data)
         else:
             return Unautherized_Response(serializers.errors)
-
-
+swagger_auto_schema(method='POST',request_body=LogoutSerializer)
+@api_view(['POST'])
+def Logout(request):
+    serializers = LogoutSerializer(data=request.data)
+    if serializers.is_valid():
+        serializers.save()
+        return No_Content_Response()
+    else:
+        return Unautherized_Response(serializers.errors)
 
 @api_view(['GET'])
 def AuthenticatedUser(request):
@@ -82,6 +91,7 @@ def AuthenticatedUser(request):
 
 @api_view(['POST'])
 @authentication_classes([])
+@permission_classes([])
 def ResetPassword(request):
     #send an email with password
     try:
@@ -100,6 +110,7 @@ def ResetPassword(request):
 
 @api_view(['PUT'])
 @authentication_classes([])
+@permission_classes([])
 def UpdatePassword(request):
     token = request.data['code']
     try:

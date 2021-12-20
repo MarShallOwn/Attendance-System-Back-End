@@ -1,4 +1,7 @@
+
 from rest_framework import serializers
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
@@ -10,7 +13,14 @@ class UserSerializers(serializers.ModelSerializer):
         fields = ['id','nationalID','username','firstname','lastname','email','phoneNumber','password']
         read_only_field = ['id']
         def create(self,validated_data):
-            return User.objects.create_user(**validated_data) 
+            return User.objects.create_user(**validated_data)
+class UpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','nationalID','username','firstname','lastname','email','phoneNumber']
+        read_only_field = ['id']
+        def create(self,validated_data):
+            return User.objects.create_user(**validated_data)
         
 class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128,min_length=6,write_only=True)
@@ -33,3 +43,17 @@ class LoginSerializer(serializers.ModelSerializer):
             'lastname':user.lastname,
             'tokens':user.tokens,
         }
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    default_error_message = {
+        'bad_token': ('Invalid or expired token')
+    }
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError as te:
+            self.fail('bad_token')
