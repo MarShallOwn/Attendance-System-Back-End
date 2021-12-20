@@ -34,3 +34,29 @@ You will need the following things properly installed on your computer.
 
 ## Running / Development
 * `to run the backend server go to api terminal and run (py manage.py runserver) for development running on ` [http://localhost:8000](http://localhost:8000)
+
+## Guidelines and Rules
+* all inputs and outputs variables comming in and out the api should be in a camelCase form for example
+```
+{
+    phoneNumber: "329434895865"
+}
+```
+* the response of the api should be return two attributes which are **(error and data)** for example
+```
+{
+    error: null,
+    data: {
+        id: 1,
+        name: "marwan",
+        age: 21
+    }
+}
+```
+* error attribute should contain a list of serialized errors in the excepected format for example
+```
+{
+    error: ["Input fields shouldn't be empty empty", "username shouldn't be less than 3 characters"],
+    data: null
+}
+```
