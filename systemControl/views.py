@@ -1,5 +1,4 @@
 from Common_Responses import Bad_Response, Created_Response, No_Content_Response, Ok_Response
-from systemControl import UpdateSystemControl
 from .serializers import ControlSerializer
 from .models import Control
 from rest_framework.decorators import api_view
