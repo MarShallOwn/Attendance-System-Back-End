@@ -8,5 +8,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/',include('authentication.urls')),
     path('department/',include('department.urls')),
+    path('role/',include('role.urls')),
 #   path('api/', include(router.urls)),
 ]
