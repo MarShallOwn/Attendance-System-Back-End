@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     'authentication',
     'department',
     'role',
+    'systemControl',
+    #for singleton design pattern
+    "solo",
     
 ]
 
