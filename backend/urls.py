@@ -9,5 +9,7 @@ urlpatterns = [
     path('auth/',include('authentication.urls')),
     path('department/',include('department.urls')),
     path('role/',include('role.urls')),
+    path('holiday/',include('holiday.urls')),
+    path('weekend/',include('weekend.urls')),
 #   path('api/', include(router.urls)),
 ]

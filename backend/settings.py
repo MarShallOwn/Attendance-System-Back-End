@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'authentication',
     'department',
     'role',
+    'holiday',
+    'weekend',
     
 ]
 
