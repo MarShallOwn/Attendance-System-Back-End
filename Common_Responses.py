@@ -50,7 +50,7 @@ def Created_Response():
                 'data':None,},
                 status=Status_Code('created'))
 
-def Unautherized_Response(data):
+def Unautherized_Response(data = "Unautherized Request"):
     return Response({
                 'error':data,
                 'data':None},

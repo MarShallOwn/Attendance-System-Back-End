@@ -4,7 +4,7 @@ from .models import department
 from rest_framework.decorators import api_view
 
 #GET-Post
-@api_view(['Get','Post'])
+@api_view(['GET','POST'])
 def Department_List(request):
     if request.method == 'GET':
         try:
@@ -18,7 +18,7 @@ def Department_List(request):
         serializer = departmentserializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Created_Response(serializer.data)
+            return Created_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     else:
@@ -36,14 +36,14 @@ def Department_pk(request, pk):
         return Ok_Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = departmentserializer(department, data=request.data)
+        serializer = departmentserializer(departments, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return No_Content_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     elif request.method == 'DELETE':
-            department.delete()
+            departments.delete()
             return No_Content_Response()
     else:
         return Bad_Response('All departments pk')

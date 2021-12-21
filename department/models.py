@@ -17,6 +17,6 @@ class department(TrackingModel,models.Model):
     ) 
     departmentName = models.CharField(max_length=20,blank=False,null=False)
     departmentDesc = models.TextField(blank=False,null=False)
-    departmentHeadID = models.OneToOneField(User,related_name='department',on_delete=models.SET_NULL,null=True,blank=False)
+    departmentHeadID = models.OneToOneField(User,related_name='headOnDepartment',on_delete=models.SET_NULL,null=True,blank=False)
     def __str__(self):
-        return self.departmentName
+        return str(self.id)
