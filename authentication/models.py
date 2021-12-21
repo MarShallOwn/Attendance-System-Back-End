@@ -17,13 +17,12 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 #allow me to change defualt id with uuid with unsequintial number
 import uuid as uuid_lib
-#these two import one for JWT and settings for using Secret key
-import jwt
-from django.conf import settings
-from datetime import datetime, timedelta
+#Used to generate the access and the refresh token
+from rest_framework_simplejwt.tokens import RefreshToken
+#models the user has relation with 
+from role.models import role
 
 class MyUserManager(UserManager):
-
     def _create_user(self, username, email, password, **extra_fields):
         if not username:
             raise ValueError('The given username must be set')
@@ -49,7 +48,6 @@ class MyUserManager(UserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
         return self._create_user(username, email, password, **extra_fields)
-
 
 
 class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
@@ -108,24 +106,20 @@ class User(AbstractBaseUser,PermissionsMixin,TrackingModel):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
+    role = models.ForeignKey(role,related_name='user',on_delete=models.SET_NULL,blank=False,null=True)
+    department = models.ForeignKey('department.department',on_delete=models.SET_NULL,blank=False,null=True)
     objects = MyUserManager()
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    #This Property used to generate token when call it
-    @property
-    def token(self):
-        token = jwt.encode(
-            {
-                'username':self.username,
-                'email':self.email,
-                'exp':datetime.utcnow()+timedelta(hours=24),},
-            settings.SECRET_KEY,
-            algorithm='HS256',)
-
-        return token
-
+    #used to generate token when call it
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access':str(refresh.access_token),
+        }
+    def __str__(self):
+        return str(self.id)

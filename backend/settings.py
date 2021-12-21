@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,11 +44,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-
+    #to black list the refresh token
+    'rest_framework_simplejwt.token_blacklist',
+    #swagger UI
+    'drf_yasg',
+    #JWT AUTH
+    'rest_framework_simplejwt',
     #apps
     'authentication',
     'department',
     'role',
+    'systemControl',
+    #for singleton design pattern
+    "solo",
     
 ]
 
@@ -56,10 +64,15 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "authentication.User"
 
 REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY': 'error',
     # Here all Global Settings for authentication and permissions
     'DEFAULT_AUTHENTICATION_CLASSES':[
-        'authentication.jwt.JWTAuthentication'
-    ]
+        'authentication.jwt.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 MIDDLEWARE = [
@@ -165,9 +178,27 @@ CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000'
 ]
 
+#configration to send emails through gmail account
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 #YOU SHOULD SET THESE TWO VALUES INSIDE THE .ENV FILE
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+#swagger config to user Bearer to endpoints
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+#time of access token and refresh token to be valid
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=24),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(hours=12),
+}

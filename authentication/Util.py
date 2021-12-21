@@ -4,13 +4,14 @@ responsible for sending the email to specific user
 
 """
 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 class Util:
     @staticmethod
     def send_email(data):
-        email= EmailMessage(
+        email= EmailMultiAlternatives(
             subject=data['subject'],
             body=data['body'],
             to=[data['to']],
             )
+        email.attach_alternative(data['body'],"text/html")
         email.send()

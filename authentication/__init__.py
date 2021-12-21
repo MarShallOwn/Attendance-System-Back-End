@@ -34,7 +34,7 @@ def checkUserTableExists():
     return False
     
 #this function create default admin user with this account
-#email =admin@gmail.com , password =admin
+#email =admin@gmail.com , password =adminn
 def CreateDefaultAdminUser():
     query = (
             "INSERT IGNORE INTO authentication_user("
@@ -50,12 +50,11 @@ def CreateDefaultAdminUser():
             "email,"
             "is_staff,"
             "is_active,"
-            "date_joined,"
             "phoneNumber)"
             "VALUES"
             "("
             "'1977139bb3ed4b5cbba4137646c68351',"
-            "'pbkdf2_sha256$320000$SWK2xfcXqUBrRmnNZLkK0i$GAYRcH5WcQOtmlCXjvHrobzVpgW4AP14IPrh81sQ5Lw=',"
+            "'pbkdf2_sha256$320000$O5B2mPKJeVHTXoQtpLjyCA$dhurPOrerTChIsSq6fy4npGu2JNoebL7cH2uYQuGbR8=',"
             "'1',"
             "now(),"
             "now(),"
@@ -66,7 +65,6 @@ def CreateDefaultAdminUser():
             "'admin@gmail.com',"
             "'1',"
             "'1',"
-            "now(),"
             "'01111111111')"
         )   
     mydb=connector.connect(
