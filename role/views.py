@@ -19,7 +19,7 @@ def role_List(request):
         serializer = roleserializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Created_Response(serializer.data)
+            return Created_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     else:
@@ -37,14 +37,14 @@ def role_pk(request, pk):
         return Ok_Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = roleserializer(role, data=request.data)
+        serializer = roleserializer(roles, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return No_Content_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     elif request.method == 'DELETE':
-            role.delete()
+            roles.delete()
             return No_Content_Response()
     else:
         return Bad_Response('All role pk')
