@@ -54,10 +54,11 @@ INSTALLED_APPS = [
     'authentication',
     'department',
     'role',
+    'holiday',
+    'weekend',
     'systemControl',
     #for singleton design pattern
     "solo",
-    
 ]
 
 #this is our Custom User model to be authenticated
