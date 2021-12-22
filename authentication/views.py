@@ -1,10 +1,7 @@
 from django.conf import settings
-from django.contrib.auth.hashers import check_password
 from drf_yasg.utils import swagger_auto_schema
 import jwt
-from rest_framework.serializers import Serializer
-from authentication.permissions import IsManager
-from django.apps import apps
+from department.models import department
 from .models import User
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .serializers import LoginSerializer, LogoutSerializer, UpdateSerializer, UserSerializers
@@ -17,12 +14,24 @@ def addRoleNameToModel(serializer):
     if str(type(serializer.data))=="<class 'rest_framework.utils.serializer_helpers.ReturnList'>":
         for user in serializer.data:
             u = User.objects.get(id=user['id'])
-            user['roleName'] = u.role.roleName
+            if u.role != None:
+                user['roleName'] = u.role.roleName
+            if u.department != None:
+                user['departmentName'] = u.department.departmentName
+            if user['headOnDepartment'] != None:
+                dept = department.objects.get(id = user['headOnDepartment'])
+                user['headOnDepartmentName'] = dept.departmentName
         return True
     else:
         dic = serializer.data
         user = User.objects.get(id=dic['id'])
-        dic['roleName'] = user.role.roleName
+        if user.role != None:
+            dic['roleName'] = user.role.roleName
+        if user.department != None:
+            dic['departmentName'] = user.department.departmentName
+        if dic['headOnDepartment'] != None:
+            dept = department.objects.get(id = dic['headOnDepartment'])
+            dic['headOnDepartmentName'] = dept.departmentName
         return dic
 
 #Create and List The Users =>allow GET and POST
