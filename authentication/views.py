@@ -1,7 +1,10 @@
 from django.conf import settings
+from django.contrib.auth.hashers import check_password
 from drf_yasg.utils import swagger_auto_schema
 import jwt
+from rest_framework.serializers import Serializer
 from authentication.permissions import IsManager
+from django.apps import apps
 from .models import User
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from .serializers import LoginSerializer, LogoutSerializer, UpdateSerializer, UserSerializers
@@ -10,30 +13,44 @@ from Common_Responses import *
 #the class resposible for sending emails
 from .Util import Util
 
+def addRoleNameToModel(serializer):
+    if str(type(serializer.data))=="<class 'rest_framework.utils.serializer_helpers.ReturnList'>":
+        for user in serializer.data:
+            u = User.objects.get(id=user['id'])
+            user['roleName'] = u.role.roleName
+        return True
+    else:
+        dic = serializer.data
+        user = User.objects.get(id=dic['id'])
+        dic['roleName'] = user.role.roleName
+        return dic
+
 #Create and List The Users =>allow GET and POST
 @api_view(['GET','POST'])
 def Registration(request):  
-    if IsManager(request):
-        if request.method=='GET':
-            try:
-                users = User.objects.all()
-            except:
-                return Bad_Response(data=None,From='GET Registration User')
-            serializers = UserSerializers(instance=users,many=True)
-            return Ok_Response(serializers.data)
-        
-        elif request.method=='POST':
-            serializers = UserSerializers(data=request.data)
-            if serializers.is_valid():
-                instance =serializers.save()
-                instance.set_password(instance.password)
-                instance.save()
-                return Created_Response()
-            else:
-                return Bad_Response(data=serializers.errors,From=None)
+    # if IsManager(request):
+    
+    if request.method=='GET':
+        try:
+            users = User.objects.all()
+        except:
+            return Bad_Response(data=None,From='GET Registration User')
+        serializers = UserSerializers(instance=users,many=True)
+        addRoleNameToModel(serializers)
+        return Ok_Response(serializers.data)
+    
+    elif request.method=='POST':
+        serializers = UserSerializers(data=request.data)
+        if serializers.is_valid():
+            instance =serializers.save()
+            instance.set_password(instance.password)
+            instance.save()
+            return Created_Response()
         else:
-            return Bad_Response(data=None,From='ALL Regestration User')
-    return Unautherized_Response()
+            return Bad_Response(data=serializers.errors,From=None)
+    else:
+        return Bad_Response(data=None,From='ALL Regestration User')
+    # return Unautherized_Response()
 #Edit,GET specific user, Delete
 @api_view(['GET','PUT','DELETE'])
 def Mentainanace(request,pk):
@@ -50,7 +67,7 @@ def Mentainanace(request,pk):
             return Bad_Response(data=deserializer.errors,From='PUT Mentainance User')
     elif request.method == 'GET':
         serializers = UserSerializers(instance=user)
-        return Ok_Response(data=serializers.data)
+        return Ok_Response(data=addRoleNameToModel(serializers))
     elif request.method == 'DELETE':
         user.delete()
         return No_Content_Response()
