@@ -5,13 +5,13 @@ from rest_framework.decorators import api_view
 
 # Create your views here.
 #GET-Post
-@api_view(['Get','Post'])
+@api_view(['GET','POST'])
 def role_List(request):
     if request.method == 'GET':
         try:
             roles = role.objects.all()
         except:
-            return Bad_Response(data=None,From='Get role')
+            return Bad_Response(data=None,From='GET role')
         serializer = roleserializer(roles, many=True)
         return Ok_Response(serializer.data)
 
@@ -19,7 +19,7 @@ def role_List(request):
         serializer = roleserializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Created_Response(serializer.data)
+            return Created_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     else:
@@ -37,14 +37,14 @@ def role_pk(request, pk):
         return Ok_Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = roleserializer(role, data=request.data)
+        serializer = roleserializer(roles, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return No_Content_Response()
         else:
             return Bad_Response(data=serializer.errors,From=None)
     elif request.method == 'DELETE':
-            role.delete()
+            roles.delete()
             return No_Content_Response()
     else:
         return Bad_Response('All role pk')
