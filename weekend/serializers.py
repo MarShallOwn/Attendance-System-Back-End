@@ -4,5 +4,5 @@ from weekend.models import weekend
 class weekendserializer(serializers.ModelSerializer):
     class Meta:
         model = weekend
-        fields = ['id','saturday','sunday','monday','tuesday','wednesday','thursday','friday']
+        fields = '__all__'
         read_only_fields = ['id']

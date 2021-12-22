@@ -3,7 +3,7 @@ from weekend.serializers import weekendserializer
 from .models import weekend
 from rest_framework.decorators import api_view
 
-@api_view(['GET','POST'])
+@api_view(['GET'])
 def weekend_List(request):
     if request.method == 'GET':
         try:
@@ -12,32 +12,16 @@ def weekend_List(request):
             return Bad_Response(data=None,From='GET weekend')
         serializer = weekendserializer(weekends)
         return Ok_Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = weekendserializer(data=request.data)
-        if serializer.is_valid():
-            if int(weekend.objects.count())!=1:
-                serializer.save()
-                return Created_Response()
-            else:
-                return Bad_Response(data="weekend must contain one object")
-        else:
-                return Bad_Response(data=serializer.errors)
     else:
-            return Bad_Response('All weekend')
+        return Bad_Response('All weekend')
 
-@api_view(['GET','PUT'])
-def weekend_pk(request, pk):
+@api_view(['PUT'])
+def weekend_pk(request):
     try:
-        weekends = weekend.objects.get(pk=pk)
+        weekends = weekend.objects.all().first()
     except weekend.DoesNotExist:
         return Bad_Response(data= None,From='GET weekend pk')
-         
-    if request.method == 'GET':
-        serializer = weekendserializer(weekends)
-        return Ok_Response(serializer.data)
-
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
         serializer = weekendserializer(weekends, data=request.data)
         if serializer.is_valid():
             serializer.save()
