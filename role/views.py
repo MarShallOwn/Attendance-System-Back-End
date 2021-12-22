@@ -5,13 +5,13 @@ from rest_framework.decorators import api_view
 
 # Create your views here.
 #GET-Post
-@api_view(['Get','Post'])
+@api_view(['GET','POST'])
 def role_List(request):
     if request.method == 'GET':
         try:
             roles = role.objects.all()
         except:
-            return Bad_Response(data=None,From='Get role')
+            return Bad_Response(data=None,From='GET role')
         serializer = roleserializer(roles, many=True)
         return Ok_Response(serializer.data)
 
