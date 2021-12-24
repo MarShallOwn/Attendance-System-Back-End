@@ -44,7 +44,9 @@ def role_pk(request, pk):
         else:
             return Bad_Response(data=serializer.errors,From=None)
     elif request.method == 'DELETE':
-            roles.delete()
-            return No_Content_Response()
+            if roles.roleName!='manager' or roles.roleName!='employer':
+                roles.delete()
+                return No_Content_Response()
+            return Bad_Response(data={'managerRole':"Can't Be Deleted",'employerRole':"Can't Be Deleted"})
     else:
         return Bad_Response('All role pk')
