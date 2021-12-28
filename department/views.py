@@ -3,6 +3,21 @@ from department.serializers import departmentserializer
 from .models import department
 from rest_framework.decorators import api_view
 
+def addDepartmentHeadNameToModel(serializer):
+    if str(type(serializer.data))=="<class 'rest_framework.utils.serializer_helpers.ReturnList'>":
+        for depts in serializer.data:
+            dept= department.objects.get(id = depts['id'])
+            if dept.departmentHeadID !=None:
+                depts['departmentHeadName'] =dept.departmentHeadID.firstname + ' ' + dept.departmentHeadID.lastname
+        return True
+    else:
+        dept = serializer.data
+        dep= department.objects.get(id = dept['id'])
+        if dep.departmentHeadID !=None:
+            dept['departmentHeadName'] = dep.departmentHeadID.firstname + ' ' + dep.departmentHeadID.lastname
+        return dept
+
+
 #GET-Post
 @api_view(['GET','POST'])
 def Department_List(request):
@@ -12,6 +27,7 @@ def Department_List(request):
         except:
             return Bad_Response(data=None,From='Get department')
         serializer = departmentserializer(departments, many=True)
+        addDepartmentHeadNameToModel(serializer)
         return Ok_Response(serializer.data)
 
     elif request.method == 'POST':
@@ -33,7 +49,8 @@ def Department_pk(request, pk):
          
     if request.method == 'GET':
         serializer = departmentserializer(departments)
-        return Ok_Response(serializer.data)
+        dept = addDepartmentHeadNameToModel(serializer)
+        return Ok_Response(dept)
 
     elif request.method == 'PUT':
         serializer = departmentserializer(departments, data=request.data)

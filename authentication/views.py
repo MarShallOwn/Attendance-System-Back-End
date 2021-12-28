@@ -78,8 +78,10 @@ def Mentainanace(request,pk):
         serializers = UserSerializers(instance=user)
         return Ok_Response(data=addRoleNameToModel(serializers))
     elif request.method == 'DELETE':
-        user.delete()
-        return No_Content_Response()
+        if user.email !="admin@gmail.com":
+            user.delete()
+            return No_Content_Response()
+        return Bad_Response(data="Admin Can't be deleted!!!")
     else:
         return Bad_Response(data=None,From='ALL Mentainance User')
 

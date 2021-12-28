@@ -5,7 +5,7 @@ from helpers.models import TrackingModel
 
 # Create your models here.
 
-class department(TrackingModel,models.Model):
+class department(TrackingModel):
     id = models.UUIDField(
     primary_key=True,
     unique=True,

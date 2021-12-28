@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'holiday',
     'weekend',
     'systemControl',
+    'LeaveRequest',
     'attendence',
     #for singleton design pattern
     "solo",
